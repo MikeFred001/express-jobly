@@ -20,7 +20,7 @@ const { BadRequestError } = require("../expressError");
  */
 
 function sqlForPartialUpdate(dataToUpdate, jsToSql) {
-  console.log("DATA>>>>", dataToUpdate, "JStoSQL>>>>", jsToSql);
+  // console.log("DATA>>>>", dataToUpdate, "JStoSQL>>>>", jsToSql);
   const keys = Object.keys(dataToUpdate);
   if (keys.length === 0) throw new BadRequestError("No data");
 
@@ -29,8 +29,8 @@ function sqlForPartialUpdate(dataToUpdate, jsToSql) {
       `"${jsToSql[colName] || colName}"=$${idx + 1}`,
   );
 
-  console.log("COLUMNS>>>>", cols);
-  console.log("VALUES>>>>", Object.values(dataToUpdate));
+  // console.log("COLUMNS>>>>", cols);
+  // console.log("VALUES>>>>", Object.values(dataToUpdate));
 
   return {
     setCols: cols.join(", "),
