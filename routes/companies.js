@@ -47,12 +47,25 @@ router.post("/", ensureLoggedIn, async function (req, res, next) {
  * - maxEmployees
  * - nameLike (will find case-insensitive, partial matches)
  *
+ * Throws error if minEmployees query is greater than maxEmployees
  * Authorization required: none
  */
 
 router.get("/", async function (req, res, next) {
-  const companies = await Company.findAll();
-  return res.json({ companies });
+  console.log("REQ QUERY>>>>>", req.query);
+  if (Object.keys(req.query).length === 0) {
+
+    const companies = await Company.findAll();
+    return res.json({ companies });
+
+  } else {
+
+    const queries = req.query;
+    // console.log("QUERIES>>>>>", queries);
+    const companies = await Company.searchCompanies(queries);
+    // console.log("COMPANIES>>>>>>", companies);
+    return res.json({ companies });
+  }
 });
 
 /** GET /[handle]  =>  { company }

@@ -95,6 +95,101 @@ describe("GET /companies", function () {
           ],
     });
   });
+
+  test("Gets correct companies base on filters", async function() {
+
+    const resp = await request(app).get("/companies")
+      .query({
+        name: "c2",
+        minEmployees: 1,
+        maxEmployees: 3
+      });
+
+    const resp2 = await request(app).get("/companies")
+    .query({
+      name: "c3"
+    });
+
+    const resp3 = await request(app).get("/companies")
+    .query({
+      name: "c1",
+      minEmployees: 3
+    });
+
+    expect(resp2.body.companies).toEqual([{
+      handle: "c3",
+      name: "C3",
+      numEmployees: 3,
+      description: "Desc3",
+      logoUrl: "http://c3.img",
+    }]);
+
+    expect(resp.body.companies).toEqual([{
+      handle: "c2",
+      name: "C2",
+      numEmployees: 2,
+      description: "Desc2",
+      logoUrl: "http://c2.img",
+    }]);
+
+    expect(resp3.body.companies).toEqual([]);
+  });
+
+
+  test("Gets multiple companies correctly", async function() {
+
+    const resp = await request(app).get("/companies")
+      .query({
+        name: "c",
+        minEmployees: 2,
+        maxEmployees: 3
+      });
+
+    expect(resp.body).toEqual({ companies: [{
+        handle: "c2",
+        name: "C2",
+        numEmployees: 2,
+        description: "Desc2",
+        logoUrl: "http://c2.img",
+      },
+      {
+        handle: "c3",
+        name: "C3",
+        numEmployees: 3,
+        description: "Desc3",
+        logoUrl: "http://c3.img"
+      }]
+    });
+  });
+
+  test("Throws error if min and max are invalid", async function() {
+
+    const resp = await request(app).get("/companies")
+      .query({
+        name: "c",
+        minEmployees: 3,
+        maxEmployees: 1
+      });
+
+    expect(resp.body.error).toEqual({
+        "message": "Bad Request",
+        "status": 400
+    });
+  });
+
+  test("Throws error if inputs are invalid", async function() {
+
+    const resp = await request(app).get("/companies")
+      .query({
+        name: "c",
+        minEmployees: "textBad"
+      });
+
+    expect(resp.body.error).toEqual({
+      "message": "invalid input syntax for type integer: \"textBad\"",
+      "status": 500
+    });
+  });
 });
 
 /************************************** GET /companies/:handle */

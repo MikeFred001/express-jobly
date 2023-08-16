@@ -67,6 +67,54 @@ class Company {
     return companiesRes.rows;
   }
 
+  /** Takes a req.query object with search query parameters,
+   * { name, minEmployees, maxEmployees }
+   *
+   * Returns rows from database according to search criteria
+   * [{ handle, name, description, numEmployees, logoUrl }, ...]
+   *
+   * Throws an error if minEmployees is greater than max employees
+   */
+  static async searchCompanies( search ) {
+    console.log("SEARCH>>>>>", search);
+    if (Number(search.minEmployees) > Number(search.maxEmployees)) {
+      throw new BadRequestError();
+    }
+
+    const clauseStatements = [];
+    const values = [];
+    let valCount = 1;
+
+    // Builds WHERE clause for SQL query based on given search parameters
+    for (let query in search) {
+      if (query === "name") {
+        clauseStatements.push(`name ILIKE '%' || $${valCount} || '%'`);
+      } else if (query === "minEmployees") {
+        clauseStatements.push(`num_employees >= $${valCount}`);
+      } else {
+        clauseStatements.push(`num_employees <= $${valCount}`);
+      }
+      values.push(search[query]);
+      valCount++;
+    }
+
+    const whereClause = clauseStatements.join(' AND ');
+
+    const companiesRes = await db.query(`
+      SELECT handle,
+             name,
+             description,
+             num_employees AS "numEmployees",
+             logo_url      AS "logoUrl"
+      FROM companies
+      WHERE ${whereClause}
+      ORDER BY name
+    `, values
+    )
+
+    return companiesRes.rows;
+  }
+
   /** Given a company handle, return data about company.
    *
    * Returns { handle, name, description, numEmployees, logoUrl, jobs }
