@@ -5,7 +5,7 @@
 const jsonschema = require("jsonschema");
 
 const express = require("express");
-const { ensureLoggedIn } = require("../middleware/auth");
+const { ensureLoggedIn, isAdmin } = require("../middleware/auth");
 const { BadRequestError } = require("../expressError");
 const User = require("../models/user");
 const { createToken } = require("../helpers/tokens");
@@ -22,12 +22,12 @@ const router = express.Router();
  * admin.
  *
  * This returns the newly created user and an authentication token for them:
- *  {user: { username, firstName, lastName, email, isAdmin }, token }
+ *  { user: { username, firstName, lastName, email, isAdmin }, token }
  *
- * Authorization required: login
+ * Authorization required: logged in, isAdmin
  **/
 
-router.post("/", ensureLoggedIn, async function (req, res, next) {
+router.post("/", ensureLoggedIn, isAdmin, async function (req, res, next) {
   const validator = jsonschema.validate(
       req.body,
       userNewSchema,
@@ -42,32 +42,35 @@ router.post("/", ensureLoggedIn, async function (req, res, next) {
   const token = createToken(user);
   return res.status(201).json({ user, token });
 });
+// TODO: Write tests for this
 
 
 /** GET / => { users: [ {username, firstName, lastName, email }, ... ] }
  *
  * Returns list of all users.
  *
- * Authorization required: login
+ * Authorization required: logged in, isAdmin
  **/
 
-router.get("/", ensureLoggedIn, async function (req, res, next) {
+router.get("/", ensureLoggedIn, isAdmin, async function (req, res, next) {
   const users = await User.findAll();
   return res.json({ users });
 });
+// TODO: Write tests for this
 
 
 /** GET /[username] => { user }
  *
  * Returns { username, firstName, lastName, isAdmin }
  *
- * Authorization required: login
+ * Authorization required: logged in, isAdmin or is current user
  **/
 
 router.get("/:username", ensureLoggedIn, async function (req, res, next) {
   const user = await User.get(req.params.username);
   return res.json({ user });
 });
+// TODO: Write tests for this
 
 
 /** PATCH /[username] { user } => { user }

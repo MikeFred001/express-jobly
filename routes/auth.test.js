@@ -82,7 +82,7 @@ describe("POST /auth/register", function () {
           firstName: "first",
           lastName: "last",
           password: "password",
-          email: "new@email.com",
+          email: "new@email.com"
         });
     expect(resp.statusCode).toEqual(201);
     expect(resp.body).toEqual({
