@@ -31,9 +31,9 @@ describe("POST /companies", function () {
 
   test("ok for users", async function () {
     const resp = await request(app)
-        .post("/companies")
-        .send(newCompany)
-        .set("authorization", `Bearer ${u1Token}`);
+      .post("/companies")
+      .send(newCompany)
+      .set("authorization", `Bearer ${u1Token}`);
     expect(resp.statusCode).toEqual(201);
     expect(resp.body).toEqual({
       company: newCompany,
@@ -42,23 +42,23 @@ describe("POST /companies", function () {
 
   test("bad request with missing data", async function () {
     const resp = await request(app)
-        .post("/companies")
-        .send({
-          handle: "new",
-          numEmployees: 10,
-        })
-        .set("authorization", `Bearer ${u1Token}`);
+      .post("/companies")
+      .send({
+        handle: "new",
+        numEmployees: 10,
+      })
+      .set("authorization", `Bearer ${u1Token}`);
     expect(resp.statusCode).toEqual(400);
   });
 
   test("bad request with invalid data", async function () {
     const resp = await request(app)
-        .post("/companies")
-        .send({
-          ...newCompany,
-          logoUrl: "not-a-url",
-        })
-        .set("authorization", `Bearer ${u1Token}`);
+      .post("/companies")
+      .send({
+        ...newCompany,
+        logoUrl: "not-a-url",
+      })
+      .set("authorization", `Bearer ${u1Token}`);
     expect(resp.statusCode).toEqual(400);
   });
 });
@@ -70,33 +70,33 @@ describe("GET /companies", function () {
     const resp = await request(app).get("/companies");
     expect(resp.body).toEqual({
       companies:
-          [
-            {
-              handle: "c1",
-              name: "C1",
-              description: "Desc1",
-              numEmployees: 1,
-              logoUrl: "http://c1.img",
-            },
-            {
-              handle: "c2",
-              name: "C2",
-              description: "Desc2",
-              numEmployees: 2,
-              logoUrl: "http://c2.img",
-            },
-            {
-              handle: "c3",
-              name: "C3",
-              description: "Desc3",
-              numEmployees: 3,
-              logoUrl: "http://c3.img",
-            },
-          ],
+        [
+          {
+            handle: "c1",
+            name: "C1",
+            description: "Desc1",
+            numEmployees: 1,
+            logoUrl: "http://c1.img",
+          },
+          {
+            handle: "c2",
+            name: "C2",
+            description: "Desc2",
+            numEmployees: 2,
+            logoUrl: "http://c2.img",
+          },
+          {
+            handle: "c3",
+            name: "C3",
+            description: "Desc3",
+            numEmployees: 3,
+            logoUrl: "http://c3.img",
+          },
+        ],
     });
   });
 
-  test("Gets correct companies with all params", async function() {
+  test("Gets correct companies with all params", async function () {
 
     const resp = await request(app).get("/companies")
       .query({
@@ -105,20 +105,20 @@ describe("GET /companies", function () {
         maxEmployees: 3
       });
 
-      expect(resp.body.companies).toEqual([{
-        handle: "c2",
-        name: "C2",
-        numEmployees: 2,
-        description: "Desc2",
-        logoUrl: "http://c2.img",
-      }]);
-    })
-  test("Gets correct companies with only name param", async function() {
+    expect(resp.body.companies).toEqual([{
+      handle: "c2",
+      name: "C2",
+      numEmployees: 2,
+      description: "Desc2",
+      logoUrl: "http://c2.img",
+    }]);
+  });
+  test("Gets correct companies with only name param", async function () {
 
     const resp = await request(app).get("/companies")
-    .query({
-      name: "c3"
-    });
+      .query({
+        name: "c3"
+      });
 
     expect(resp.body.companies).toEqual([{
       handle: "c3",
@@ -127,31 +127,31 @@ describe("GET /companies", function () {
       description: "Desc3",
       logoUrl: "http://c3.img",
     }]);
-  })
+  });
 
-  test("Gets correct companies with minEmployees", async function() {
+  test("Gets correct companies with minEmployees", async function () {
 
     const resp = await request(app).get("/companies")
-    .query({
-      name: "c1",
-      minEmployees: 3
-    });
+      .query({
+        name: "c1",
+        minEmployees: 3
+      });
 
     expect(resp.body.companies).toEqual([]);
 
 
   });
 
-  test("Test JSON schema validation, prevent invalid inputs", async function() {
+  test("Test JSON schema validation, prevent invalid inputs", async function () {
 
     const resp = await request(app).get("/companies")
-    .query({
-      name: "c1",
-      minEmployees: 3,
-      maxEmployees: 200,
-      color: "blue"
+      .query({
+        name: "c1",
+        minEmployees: 3,
+        maxEmployees: 200,
+        color: "blue"
 
-    });
+      });
 
     expect(resp.body).toEqual({
       "error": {
@@ -163,9 +163,9 @@ describe("GET /companies", function () {
     });
 
 
-});
+  });
 
-  test("Gets multiple companies correctly", async function() {
+  test("Gets multiple companies correctly", async function () {
 
     const resp = await request(app).get("/companies")
       .query({
@@ -174,7 +174,8 @@ describe("GET /companies", function () {
         maxEmployees: 3
       });
 
-    expect(resp.body).toEqual({ companies: [{
+    expect(resp.body).toEqual({
+      companies: [{
         handle: "c2",
         name: "C2",
         numEmployees: 2,
@@ -191,7 +192,7 @@ describe("GET /companies", function () {
     });
   });
 
-  test("Throws error if min and max are invalid", async function() {
+  test("Throws error if min and max are invalid", async function () {
 
     const resp = await request(app).get("/companies")
       .query({
@@ -201,12 +202,12 @@ describe("GET /companies", function () {
       });
 
     expect(resp.body.error).toEqual({
-        "message": "Bad Request",
-        "status": 400
+      "message": "Bad Request",
+      "status": 400
     });
   });
 
-  test("Throws error if inputs are invalid", async function() {
+  test("Throws error if inputs are invalid", async function () {
 
     const resp = await request(app).get("/companies")
       .query({
@@ -215,8 +216,10 @@ describe("GET /companies", function () {
       });
 
     expect(resp.body.error).toEqual({
-      "message": "invalid input syntax for type integer: \"textBad\"",
-      "status": 500
+      "message": [
+        "instance.minEmployees is not of a type(s) integer"
+      ],
+      "status": 400
     });
   });
 });
@@ -261,11 +264,11 @@ describe("GET /companies/:handle", function () {
 describe("PATCH /companies/:handle", function () {
   test("works for users", async function () {
     const resp = await request(app)
-        .patch(`/companies/c1`)
-        .send({
-          name: "C1-new",
-        })
-        .set("authorization", `Bearer ${u1Token}`);
+      .patch(`/companies/c1`)
+      .send({
+        name: "C1-new",
+      })
+      .set("authorization", `Bearer ${u1Token}`);
     expect(resp.body).toEqual({
       company: {
         handle: "c1",
@@ -279,40 +282,40 @@ describe("PATCH /companies/:handle", function () {
 
   test("unauth for anon", async function () {
     const resp = await request(app)
-        .patch(`/companies/c1`)
-        .send({
-          name: "C1-new",
-        });
+      .patch(`/companies/c1`)
+      .send({
+        name: "C1-new",
+      });
     expect(resp.statusCode).toEqual(401);
   });
 
   test("not found on no such company", async function () {
     const resp = await request(app)
-        .patch(`/companies/nope`)
-        .send({
-          name: "new nope",
-        })
-        .set("authorization", `Bearer ${u1Token}`);
+      .patch(`/companies/nope`)
+      .send({
+        name: "new nope",
+      })
+      .set("authorization", `Bearer ${u1Token}`);
     expect(resp.statusCode).toEqual(404);
   });
 
   test("bad request on handle change attempt", async function () {
     const resp = await request(app)
-        .patch(`/companies/c1`)
-        .send({
-          handle: "c1-new",
-        })
-        .set("authorization", `Bearer ${u1Token}`);
+      .patch(`/companies/c1`)
+      .send({
+        handle: "c1-new",
+      })
+      .set("authorization", `Bearer ${u1Token}`);
     expect(resp.statusCode).toEqual(400);
   });
 
   test("bad request on invalid data", async function () {
     const resp = await request(app)
-        .patch(`/companies/c1`)
-        .send({
-          logoUrl: "not-a-url",
-        })
-        .set("authorization", `Bearer ${u1Token}`);
+      .patch(`/companies/c1`)
+      .send({
+        logoUrl: "not-a-url",
+      })
+      .set("authorization", `Bearer ${u1Token}`);
     expect(resp.statusCode).toEqual(400);
   });
 });
@@ -322,21 +325,21 @@ describe("PATCH /companies/:handle", function () {
 describe("DELETE /companies/:handle", function () {
   test("works for users", async function () {
     const resp = await request(app)
-        .delete(`/companies/c1`)
-        .set("authorization", `Bearer ${u1Token}`);
+      .delete(`/companies/c1`)
+      .set("authorization", `Bearer ${u1Token}`);
     expect(resp.body).toEqual({ deleted: "c1" });
   });
 
   test("unauth for anon", async function () {
     const resp = await request(app)
-        .delete(`/companies/c1`);
+      .delete(`/companies/c1`);
     expect(resp.statusCode).toEqual(401);
   });
 
   test("not found for no such company", async function () {
     const resp = await request(app)
-        .delete(`/companies/nope`)
-        .set("authorization", `Bearer ${u1Token}`);
+      .delete(`/companies/nope`)
+      .set("authorization", `Bearer ${u1Token}`);
     expect(resp.statusCode).toEqual(404);
   });
 });

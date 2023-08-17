@@ -149,20 +149,20 @@ describe("findAll", function () {
       minEmployees: 3,
       maxEmployees: 1
     };
-    expect(await Company.findAll(queries)).toThrow(BadRequestError);
+    await expect(async function () {
+      await Company.findAll(queries);
+    }).rejects.toThrow(BadRequestError);
   });
 
 
-
+  test("Returns 0 companies if maxEmployees is zero", async function () {
+    let companies = await Company.findAll({
+      maxEmployees: 0
+    });
+    expect(companies).toEqual([])
+  });
+  
 });
-
-
-
-// TODO: write tests for models
-
-
-
-
 
 /************************************** get */
 
