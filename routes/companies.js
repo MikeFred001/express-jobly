@@ -10,6 +10,7 @@ const { ensureLoggedIn } = require("../middleware/auth");
 const Company = require("../models/company");
 
 const companyNewSchema = require("../schemas/companyNew.json");
+const getCompaniesSchema = require("../schemas/getCompanies.json");
 const companyUpdateSchema = require("../schemas/companyUpdate.json");
 
 const router = new express.Router();
@@ -53,19 +54,20 @@ router.post("/", ensureLoggedIn, async function (req, res, next) {
 
 router.get("/", async function (req, res, next) {
   console.log("REQ QUERY>>>>>", req.query);
-  if (Object.keys(req.query).length === 0) {
 
-    const companies = await Company.findAll();
+    const result = jsonschema.validate(
+      req.query,
+      getCompaniesSchema,
+      {required: true}
+    )
+
+    if (!result.valid) {
+      const errs = result.errors.map(err => err.stack);
+      throw new BadRequestError(errs);
+    }
+
+    const companies = await Company.findAll(req.query);
     return res.json({ companies });
-
-  } else {
-
-    const queries = req.query;
-    // console.log("QUERIES>>>>>", queries);
-    const companies = await Company.searchCompanies(queries);
-    // console.log("COMPANIES>>>>>>", companies);
-    return res.json({ companies });
-  }
 });
 
 /** GET /[handle]  =>  { company }

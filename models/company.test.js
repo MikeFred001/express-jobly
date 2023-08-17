@@ -87,6 +87,8 @@ describe("findAll", function () {
   });
 });
 
+// TODO: write tests for models
+
 /************************************** get */
 
 describe("get", function () {

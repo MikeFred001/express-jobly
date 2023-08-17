@@ -50,55 +50,51 @@ class Company {
     return company;
   }
 
-  /** Find all companies.
-   *
-   * Returns [{ handle, name, description, numEmployees, logoUrl }, ...]
-   * */
-
-  static async findAll() {
-    const companiesRes = await db.query(`
-        SELECT handle,
-               name,
-               description,
-               num_employees AS "numEmployees",
-               logo_url      AS "logoUrl"
-        FROM companies
-        ORDER BY name`);
-    return companiesRes.rows;
-  }
-
-  /** Takes a req.query object with search query parameters,
+   /** Takes a req.query object with search query parameters,
    * { name, minEmployees, maxEmployees }
    *
    * Returns rows from database according to search criteria
    * [{ handle, name, description, numEmployees, logoUrl }, ...]
    *
+   * Returns all companies if no query is entered.
+   *
    * Throws an error if minEmployees is greater than max employees
    */
-  static async searchCompanies( search ) {
-    console.log("SEARCH>>>>>", search);
-    if (Number(search.minEmployees) > Number(search.maxEmployees)) {
+
+  static async findAll(queries) {
+    console.log("SEARCH>>>>>", queries);
+    if (Number(queries.minEmployees) > Number(queries.maxEmployees)) {
       throw new BadRequestError();
     }
 
     const clauseStatements = [];
     const values = [];
-    let valCount = 1;
 
-    // Builds WHERE clause for SQL query based on given search parameters
-    for (let query in search) {
-      if (query === "name") {
-        clauseStatements.push(`name ILIKE '%' || $${valCount} || '%'`);
-      } else if (query === "minEmployees") {
-        clauseStatements.push(`num_employees >= $${valCount}`);
-      } else {
-        clauseStatements.push(`num_employees <= $${valCount}`);
-      }
-      values.push(search[query]);
-      valCount++;
-    }
+    // Builds WHERE clause for SQL query based on given query parameters
+    if ("name" in queries) {
+      clauseStatements.push(`name ILIKE '%' || $${values.length + 1} || '%'`);
+      values.push(queries.name);
+    };
 
-    const whereClause = clauseStatements.join(' AND ');
+    if ("minEmployees" in queries) {
+      clauseStatements.push(`num_employees >= $${values.length + 1}`);
+      values.push(queries.minEmployees);
+    };
+
+    if ("maxEmployees" in queries) {
+      clauseStatements.push(`num_employees <= $${values.length + 1}`);
+      values.push(queries.maxEmployees);
+    };
+
+    console.log("VALUES>>>>>>", values);
+    console.log("CLAUSE STATEMENTS>>>>>>", clauseStatements)
+
+    // Separate if statements
+    // Use index as counter
+
+    const whereClause = clauseStatements.length > 0 ?
+        'WHERE ' + clauseStatements.join(' AND ') : '';
+    console.log("WHERE CLAUSE>>>>>>>", whereClause);
 
     const companiesRes = await db.query(`
       SELECT handle,
@@ -107,13 +103,14 @@ class Company {
              num_employees AS "numEmployees",
              logo_url      AS "logoUrl"
       FROM companies
-      WHERE ${whereClause}
+      ${whereClause}
       ORDER BY name
     `, values
     )
 
     return companiesRes.rows;
   }
+
 
   /** Given a company handle, return data about company.
    *

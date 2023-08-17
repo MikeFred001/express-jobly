@@ -133,6 +133,8 @@ describe("GET /companies", function () {
     }]);
 
     expect(resp3.body.companies).toEqual([]);
+    // TODO: break tests up into different test blocks
+    // TODO: Test for validation once JSON schema is done
   });
 
 
