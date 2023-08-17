@@ -96,7 +96,7 @@ describe("GET /companies", function () {
     });
   });
 
-  test("Gets correct companies base on filters", async function() {
+  test("Gets correct companies with all params", async function() {
 
     const resp = await request(app).get("/companies")
       .query({
@@ -105,38 +105,65 @@ describe("GET /companies", function () {
         maxEmployees: 3
       });
 
-    const resp2 = await request(app).get("/companies")
+      expect(resp.body.companies).toEqual([{
+        handle: "c2",
+        name: "C2",
+        numEmployees: 2,
+        description: "Desc2",
+        logoUrl: "http://c2.img",
+      }]);
+    })
+  test("Gets correct companies with only name param", async function() {
+
+    const resp = await request(app).get("/companies")
     .query({
       name: "c3"
     });
 
-    const resp3 = await request(app).get("/companies")
-    .query({
-      name: "c1",
-      minEmployees: 3
-    });
-
-    expect(resp2.body.companies).toEqual([{
+    expect(resp.body.companies).toEqual([{
       handle: "c3",
       name: "C3",
       numEmployees: 3,
       description: "Desc3",
       logoUrl: "http://c3.img",
     }]);
+  })
 
-    expect(resp.body.companies).toEqual([{
-      handle: "c2",
-      name: "C2",
-      numEmployees: 2,
-      description: "Desc2",
-      logoUrl: "http://c2.img",
-    }]);
+  test("Gets correct companies with minEmployees", async function() {
 
-    expect(resp3.body.companies).toEqual([]);
-    // TODO: break tests up into different test blocks
-    // TODO: Test for validation once JSON schema is done
+    const resp = await request(app).get("/companies")
+    .query({
+      name: "c1",
+      minEmployees: 3
+    });
+
+    expect(resp.body.companies).toEqual([]);
+
+
   });
 
+  test("Test JSON schema validation, prevent invalid inputs", async function() {
+
+    const resp = await request(app).get("/companies")
+    .query({
+      name: "c1",
+      minEmployees: 3,
+      maxEmployees: 200,
+      color: "blue"
+
+    });
+
+    expect(resp.body).toEqual({
+      "error": {
+        "message": [
+          "instance is not allowed to have the additional property \"color\""
+        ],
+        "status": 400
+      }
+    });
+
+
+});
 
   test("Gets multiple companies correctly", async function() {
 
