@@ -38,31 +38,31 @@ class Company {
                     description,
                     num_employees AS "numEmployees",
                     logo_url AS "logoUrl"`, [
-          handle,
-          name,
-          description,
-          numEmployees,
-          logoUrl,
-        ],
+      handle,
+      name,
+      description,
+      numEmployees,
+      logoUrl,
+    ],
     );
     const company = result.rows[0];
 
     return company;
   }
 
-   /** Takes a req.query object with search query parameters,
-   * { name, minEmployees, maxEmployees }
-   *
-   * Returns rows from database according to search criteria
-   * [{ handle, name, description, numEmployees, logoUrl }, ...]
-   *
-   * Returns all companies if no query is entered.
-   *
-   * Throws an error if minEmployees is greater than max employees
-   */
+  /** Takes a req.query object with search query parameters,
+  * { name, minEmployees, maxEmployees }
+  *
+  * Returns rows from database according to search criteria
+  * [{ handle, name, description, numEmployees, logoUrl }, ...]
+  *
+  * Returns all companies if no query is entered.
+  *
+  * Throws an error if minEmployees is greater than max employees
+  */
 
   static async findAll(queries) {
-    console.log("SEARCH>>>>>", queries);
+    // console.log("SEARCH>>>>>", queries);
     if (Number(queries.minEmployees) > Number(queries.maxEmployees)) {
       throw new BadRequestError();
     }
@@ -86,15 +86,13 @@ class Company {
       values.push(queries.maxEmployees);
     };
 
-    console.log("VALUES>>>>>>", values);
-    console.log("CLAUSE STATEMENTS>>>>>>", clauseStatements)
-
-    // Separate if statements
-    // Use index as counter
+    // console.log("VALUES>>>>>>", values);
+    // console.log("CLAUSE STATEMENTS>>>>>>", clauseStatements);
 
     const whereClause = clauseStatements.length > 0 ?
-        'WHERE ' + clauseStatements.join(' AND ') : '';
-    console.log("WHERE CLAUSE>>>>>>>", whereClause);
+      'WHERE ' + clauseStatements.join(' AND ') : '';
+
+    // console.log("WHERE CLAUSE>>>>>>>", whereClause);
 
     const companiesRes = await db.query(`
       SELECT handle,
@@ -106,7 +104,7 @@ class Company {
       ${whereClause}
       ORDER BY name
     `, values
-    )
+    );
 
     return companiesRes.rows;
   }
@@ -151,11 +149,11 @@ class Company {
 
   static async update(handle, data) {
     const { setCols, values } = sqlForPartialUpdate(
-        data,
-        {
-          numEmployees: "num_employees",
-          logoUrl: "logo_url",
-        });
+      data,
+      {
+        numEmployees: "num_employees",
+        logoUrl: "logo_url",
+      });
     const handleVarIdx = "$" + (values.length + 1);
 
     const querySql = `

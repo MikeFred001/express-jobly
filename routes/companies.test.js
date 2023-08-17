@@ -68,8 +68,7 @@ describe("POST /companies", function () {
 describe("GET /companies", function () {
   test("ok for anon", async function () {
     const resp = await request(app).get("/companies");
-    expect(resp.body).toEqual({
-      companies:
+    expect(resp.body.companies).toEqual(
         [
           {
             handle: "c1",
@@ -92,8 +91,7 @@ describe("GET /companies", function () {
             numEmployees: 3,
             logoUrl: "http://c3.img",
           },
-        ],
-    });
+        ]);
   });
 
   test("Gets correct companies with all params", async function () {
@@ -105,14 +103,18 @@ describe("GET /companies", function () {
         maxEmployees: 3
       });
 
-    expect(resp.body.companies).toEqual([{
-      handle: "c2",
-      name: "C2",
-      numEmployees: 2,
-      description: "Desc2",
-      logoUrl: "http://c2.img",
-    }]);
+    expect(resp.body.companies).toEqual([
+      {
+        handle: "c2",
+        name: "C2",
+        numEmployees: 2,
+        description: "Desc2",
+        logoUrl: "http://c2.img",
+      }
+    ]);
+
   });
+
   test("Gets correct companies with only name param", async function () {
 
     const resp = await request(app).get("/companies")
@@ -120,13 +122,15 @@ describe("GET /companies", function () {
         name: "c3"
       });
 
-    expect(resp.body.companies).toEqual([{
-      handle: "c3",
-      name: "C3",
-      numEmployees: 3,
-      description: "Desc3",
-      logoUrl: "http://c3.img",
-    }]);
+    expect(resp.body.companies).toEqual([
+      {
+        handle: "c3",
+        name: "C3",
+        numEmployees: 3,
+        description: "Desc3",
+        logoUrl: "http://c3.img",
+      }
+    ]);
   });
 
   test("Gets correct companies with minEmployees", async function () {
@@ -138,7 +142,6 @@ describe("GET /companies", function () {
       });
 
     expect(resp.body.companies).toEqual([]);
-
 
   });
 
@@ -162,7 +165,6 @@ describe("GET /companies", function () {
       }
     });
 
-
   });
 
   test("Gets multiple companies correctly", async function () {
@@ -174,8 +176,8 @@ describe("GET /companies", function () {
         maxEmployees: 3
       });
 
-    expect(resp.body).toEqual({
-      companies: [{
+    expect(resp.body.companies).toEqual([
+      {
         handle: "c2",
         name: "C2",
         numEmployees: 2,
@@ -188,8 +190,9 @@ describe("GET /companies", function () {
         numEmployees: 3,
         description: "Desc3",
         logoUrl: "http://c3.img"
-      }]
-    });
+      }
+    ]);
+
   });
 
   test("Throws error if min and max are invalid", async function () {
@@ -205,6 +208,7 @@ describe("GET /companies", function () {
       "message": "Bad Request",
       "status": 400
     });
+
   });
 
   test("Throws error if inputs are invalid", async function () {
@@ -221,7 +225,9 @@ describe("GET /companies", function () {
       ],
       "status": 400
     });
+
   });
+
 });
 
 /************************************** GET /companies/:handle */

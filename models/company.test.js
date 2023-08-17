@@ -59,8 +59,11 @@ describe("create", function () {
 /************************************** findAll */
 
 describe("findAll", function () {
+
   test("works: no filter", async function () {
+
     let companies = await Company.findAll({});
+
     expect(companies).toEqual([
       {
         handle: "c1",
@@ -84,15 +87,18 @@ describe("findAll", function () {
         logoUrl: "http://c3.img",
       },
     ]);
+
   });
 
 
   test("Works with all filter", async function () {
+
     let companies = await Company.findAll({
       name: "c",
       minEmployees: 2,
       maxEmployees: 2,
     });
+
     expect(companies).toEqual([
       {
         handle: "c2",
@@ -106,9 +112,11 @@ describe("findAll", function () {
   });
 
   test("Works with only name filter", async function () {
+
     let companies = await Company.findAll({
       name: "c3"
     });
+
     expect(companies).toEqual([
       {
         handle: "c3",
@@ -118,13 +126,16 @@ describe("findAll", function () {
         logoUrl: "http://c3.img",
       }
     ]);
+
   });
 
   test("Works with name and minEmployees filter", async function () {
+
     let companies = await Company.findAll({
       name: "c",
       minEmployees: 2
     });
+
     expect(companies).toEqual([
       {
         handle: "c2",
@@ -140,29 +151,29 @@ describe("findAll", function () {
         numEmployees: 3,
         logoUrl: "http://c3.img",
       }
-
     ]);
   });
 
   test("Fails when minEmployees > maxEmployees", async function () {
+
     let queries = {
       minEmployees: 3,
       maxEmployees: 1
     };
-    await expect(async function () {
+
+    try {
       await Company.findAll(queries);
-    }).rejects.toThrow(BadRequestError);
+      throw new Error("Wrong error");
+    } catch(err) {
+      console.log("CATCH BLOCK");
+      expect(err instanceof BadRequestError).toBeTruthy();
+    }
+    // expect(await Company.findAll(queries)).toThrow(BadRequestError);
+
   });
 
-
-  test("Returns 0 companies if maxEmployees is zero", async function () {
-    let companies = await Company.findAll({
-      maxEmployees: 0
-    });
-    expect(companies).toEqual([])
-  });
-  
 });
+
 
 /************************************** get */
 

@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">11.11% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>1/9</span>
+                <span class='fraction'>9/9</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/12</span>
+                <span class='fraction'>12/12</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/1</span>
+                <span class='fraction'>1/1</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">11.11% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>1/9</span>
+                <span class='fraction'>9/9</span>
             </div>
         
             
@@ -61,7 +61,7 @@
             </div>
         </template>
     </div>
-    <div class='status-line low'></div>
+    <div class='status-line high'></div>
     <pre><table class="coverage">
 <tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
 <a name='L2'></a><a href='#L2'>2</a>
@@ -106,26 +106,26 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">9x</span>
+<span class="cline-any cline-yes">9x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">9x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">9x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">10x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">9x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">9x</span>
 <span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -135,7 +135,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">9x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -146,25 +146,25 @@
 /** Shared config for application; can be required many places. */
 &nbsp;
 require("dotenv").config();
-<span class="cstat-no" title="statement not covered" >require("colors");</span>
+require("colors");
 &nbsp;
-const SECRET_KEY = <span class="cstat-no" title="statement not covered" >process.env.SECRET_KEY || "secret-dev";</span>
+const SECRET_KEY = process.env.SECRET_KEY || "secret-dev";
 &nbsp;
-const PORT = <span class="cstat-no" title="statement not covered" >+process.env.PORT || 3001;</span>
+const PORT = +process.env.PORT || 3001;
 &nbsp;
 // Use dev database, testing database, or via env var, production database
-function <span class="fstat-no" title="function not covered" >getDatabaseUri(</span>) {
-<span class="cstat-no" title="statement not covered" >  return (process.env.NODE_ENV === "test")</span>
+function getDatabaseUri() {
+  return (process.env.NODE_ENV === "test")
       ? "postgresql:///jobly_test"
       : process.env.DATABASE_URL || "postgresql:///jobly";
 }
 // Speed up bcrypt during tests, since the algorithm safety isn't being tested
 //
 // WJB: Evaluate in 2021 if this should be increased to 13 for non-test use
-const BCRYPT_WORK_FACTOR = <span class="cstat-no" title="statement not covered" >process.env.NODE_ENV === "test" ? 1 : 12;</span>
+const BCRYPT_WORK_FACTOR = process.env.NODE_ENV === "test" ? 1 : 12;
 &nbsp;
-<span class="cstat-no" title="statement not covered" >if (process.env.NODE_ENV !== "test") {</span>
-<span class="cstat-no" title="statement not covered" >  console.log(`</span>
+if (process.env.NODE_ENV !== "test") {
+  console.log(`
 ${"Jobly Config:".green}
 ${"NODE_ENV:".yellow}           ${process.env.NODE_ENV}
 ${"SECRET_KEY:".yellow}         ${SECRET_KEY}
@@ -174,7 +174,7 @@ ${"Database:".yellow}           ${getDatabaseUri()}
 ---`);
 }
 &nbsp;
-<span class="cstat-no" title="statement not covered" >module.exports = {</span>
+module.exports = {
   SECRET_KEY,
   PORT,
   BCRYPT_WORK_FACTOR,
@@ -187,7 +187,7 @@ ${"Database:".yellow}           ${getDatabaseUri()}
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2023-08-17T00:04:14.740Z
+                at 2023-08-17T17:56:41.857Z
             </div>
         <script src="../prettify.js"></script>
         <script>
