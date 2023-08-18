@@ -62,37 +62,31 @@ class Company {
   */
 
   static async findAll(queries) {
-    // console.log("SEARCH>>>>>", queries);
     if (Number(queries.minEmployees) > Number(queries.maxEmployees)) {
       throw new BadRequestError();
     }
 
-    const clauseStatements = [];
+    const whereConditions = [];
     const values = [];
 
     // Builds WHERE clause for SQL query based on given query parameters
     if ("name" in queries) {
-      clauseStatements.push(`name ILIKE '%' || $${values.length + 1} || '%'`);
+      whereConditions.push(`name ILIKE '%' || $${values.length + 1} || '%'`);
       values.push(queries.name);
     };
 
     if ("minEmployees" in queries) {
-      clauseStatements.push(`num_employees >= $${values.length + 1}`);
+      whereConditions.push(`num_employees >= $${values.length + 1}`);
       values.push(queries.minEmployees);
     };
 
     if ("maxEmployees" in queries) {
-      clauseStatements.push(`num_employees <= $${values.length + 1}`);
+      whereConditions.push(`num_employees <= $${values.length + 1}`);
       values.push(queries.maxEmployees);
     };
 
-    // console.log("VALUES>>>>>>", values);
-    // console.log("CLAUSE STATEMENTS>>>>>>", clauseStatements);
-
-    const whereClause = clauseStatements.length > 0 ?
-      'WHERE ' + clauseStatements.join(' AND ') : '';
-
-    // console.log("WHERE CLAUSE>>>>>>>", whereClause);
+    const whereClause = whereConditions.length > 0 ?
+      'WHERE ' + whereConditions.join(' AND ') : '';
 
     const companiesRes = await db.query(`
       SELECT handle,
@@ -119,16 +113,28 @@ class Company {
    **/
 
   static async get(handle) {
+    const jobsRes = await db.query(`
+      SELECT id,
+             title,
+             salary,
+             equity
+      FROM jobs
+      WHERE company_handle = $1
+      ORDER BY salary
+    `,[handle]);
+
     const companyRes = await db.query(`
-        SELECT handle,
-               name,
-               description,
-               num_employees AS "numEmployees",
-               logo_url      AS "logoUrl"
-        FROM companies
-        WHERE handle = $1`, [handle]);
+      SELECT handle,
+              name,
+              description,
+              num_employees AS "numEmployees",
+              logo_url      AS "logoUrl"
+      FROM companies
+      WHERE handle = $1`, [handle]);
 
     const company = companyRes.rows[0];
+    const jobs = jobsRes.rows;
+    company.jobs = jobs;
 
     if (!company) throw new NotFoundError(`No company: ${handle}`);
 

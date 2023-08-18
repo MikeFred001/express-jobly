@@ -4,30 +4,21 @@ const db = require("../db");
 const { BadRequestError, NotFoundError } = require("../expressError");
 const { sqlForPartialUpdate } = require("../helpers/sql");
 
-/** Related functions for companies. */
+/** Related functions for jobs. */
 
 class Job {
 
-  /** Create a company (from data), update db, return new company data.
+  /** Create a job (from data), update db, return new job data.
    *
-   * data should be { handle, name, description, numEmployees, logoUrl }
+   * data should be { title, salary, equity, companyHandle }
    *
-   * Returns { handle, name, description, numEmployees, logoUrl }
+   * Returns { id, title, salary, equity, companyHandle }
    *
-   * Throws BadRequestError if company already in database.
+   * Throws NotFoundError if companyHandle cannot be matched to a company
+   * in the companies table.
    * */
 
   static async create({ title, salary, equity, companyHandle }) {
-    // const duplicateCheck = await db.query(`
-    //     SELECT id
-    //     FROM jobs
-    //     WHERE id = $1`, [id]);
-
-    // if (duplicateCheck.rows[0])
-    //   throw new BadRequestError(`Duplicate job: ${id}`);
-
-    // TODO: Ask if the above code is needed/how to deal with SERIAL PK
-
     const companyRes = await db.query(`
       SELECT handle
         FROM companies
@@ -36,8 +27,7 @@ class Job {
 
     if (!companyRes.rows[0]) throw new NotFoundError();
 
-
-    const result = await db.query(`
+    const jobRes = await db.query(`
       INSERT INTO jobs (title,
                         salary,
                         equity,
@@ -48,50 +38,45 @@ class Job {
           title,
           salary,
           equity,
-          company_handle AS "companyHandle"`, [
-      title,
-      salary,
-      equity,
-      companyHandle,
-    ]);
-    const job = result.rows[0];
+          company_handle AS "companyHandle"`,
+          [title, salary, equity, companyHandle]);
+
+    const job = jobRes.rows[0];
 
     return job;
   }
 
   /** Takes a req.query object with search query parameters,
-  * { name, minEmployees, maxEmployees }
+  * { title, minSalary, hasEquity }
   *
   * Returns rows from database according to search criteria
-  * [{ handle, name, description, numEmployees, logoUrl }, ...]
+  * [{ id, title, salary, equity, companyHandle }, ...]
   *
-  * Returns all companies if no query is entered.
+  * Returns all jobs if no query is entered.
   *
-  * Throws an error if minEmployees is greater than max employees
   */
 
   static async findAll(queries) {
-
-    const clauseStatements = [];
+    const whereConditions = [];
     const values = [];
 
     if ("title" in queries) {
-      clauseStatements.push(`title ILIKE '%' || $${values.length + 1} || '%'`);
+      whereConditions.push(`title ILIKE '%' || $${values.length + 1} || '%'`);
       values.push(queries.title);
     };
 
     if ("minSalary" in queries) {
-      clauseStatements.push(`salary >= $${values.length + 1}`);
+      whereConditions.push(`salary >= $${values.length + 1}`);
       values.push(queries.minSalary);
     };
 
     if ("hasEquity" in queries && queries.hasEquity === true) {
-      clauseStatements.push(`equity > $${values.length + 1}`);
+      whereConditions.push(`equity > $${values.length + 1}`);
       values.push(0);
     };
 
-    const whereClause = clauseStatements.length > 0 ?
-      'WHERE ' + clauseStatements.join(' AND ') : '';
+    const whereClause = whereConditions.length > 0 ?
+      'WHERE ' + whereConditions.join(' AND ') : '';
 
     const jobsRes = await db.query(`
       SELECT id,
@@ -108,10 +93,9 @@ class Job {
   }
 
 
-  /** Given a company handle, return data about company.
+  /** Given a job id, return data about job.
    *
-   * Returns { handle, name, description, numEmployees, logoUrl, jobs }
-   *   where jobs is [{ id, title, salary, equity, companyHandle }, ...]
+   * Returns { id, title, salary, equity, companyHandle }
    *
    * Throws NotFoundError if not found.
    **/
@@ -133,14 +117,14 @@ class Job {
     return job;
   }
 
-  /** Update company data with `data`.
+  /** Update job data with `data`.
    *
    * This is a "partial update" --- it's fine if data doesn't contain all the
    * fields; this only changes provided ones.
    *
-   * Data can include: {name, description, numEmployees, logoUrl}
+   * Data can include: { title, salary, equity }
    *
-   * Returns {handle, name, description, numEmployees, logoUrl}
+   * Returns { id, title, salary, equity, companyHandle }
    *
    * Throws NotFoundError if not found.
    */
@@ -171,9 +155,11 @@ class Job {
     return job;
   }
 
-  /** Delete given company from database; returns undefined.
+  /** Delete given job from database; returns undefined.
    *
-   * Throws NotFoundError if company not found.
+   * Returns { deleted: id }
+   *
+   * Throws NotFoundError if job not found.
    **/
 
   static async remove(id) {
