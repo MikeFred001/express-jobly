@@ -11,7 +11,8 @@ const {
   commonAfterEach,
   commonAfterAll,
   u1Token,
-  u2Token
+  u2Token,
+  adminToken
 } = require("./_testCommon");
 
 beforeAll(commonBeforeAll);
@@ -45,7 +46,7 @@ describe("POST /companies", function () {
     const resp = await request(app)
       .post("/companies")
       .send(newCompany)
-      .set("authorization", `Bearer ${u2Token}`);
+      .set("authorization", `Bearer ${adminToken}`);
 
     expect(resp.statusCode).toEqual(201);
     expect(resp.body).toEqual({ company: newCompany });
@@ -60,7 +61,7 @@ describe("POST /companies", function () {
         numEmployees: 10,
       })
 
-      .set("authorization", `Bearer ${u2Token}`);
+      .set("authorization", `Bearer ${adminToken}`);
     expect(resp.statusCode).toEqual(400);
   });
 
@@ -71,7 +72,7 @@ describe("POST /companies", function () {
         ...newCompany,
         logoUrl: "not-a-url",
       })
-      .set("authorization", `Bearer ${u2Token}`);
+      .set("authorization", `Bearer ${adminToken}`);
     expect(resp.statusCode).toEqual(400);
   });
 });
@@ -107,6 +108,48 @@ describe("GET /companies", function () {
             logoUrl: "http://c3.img",
           },
         ]);
+  });
+
+  test("Works for users", async function () {
+
+    const resp = await request(app).get("/companies")
+      .query({
+        name: "c2"
+      })
+      .set("authorization", `Bearer ${u1Token}`);
+
+    expect(resp.statusCode).toEqual(200);
+    expect(resp.body.companies).toEqual([
+      {
+        handle: "c2",
+        name: "C2",
+        numEmployees: 2,
+        description: "Desc2",
+        logoUrl: "http://c2.img",
+      }
+    ]);
+
+  });
+
+  test("Works for admins", async function () {
+
+    const resp = await request(app).get("/companies")
+      .query({
+        name: "c2"
+      })
+      .set("authorization", `Bearer ${adminToken}`);
+
+    expect(resp.statusCode).toEqual(200);
+    expect(resp.body.companies).toEqual([
+      {
+        handle: "c2",
+        name: "C2",
+        numEmployees: 2,
+        description: "Desc2",
+        logoUrl: "http://c2.img",
+      }
+    ]);
+
   });
 
   test("Gets correct companies with all params", async function () {
@@ -163,7 +206,7 @@ describe("GET /companies", function () {
 
   });
 
-  test("Test JSON schema validation, prevent invalid inputs", async function () {
+  test("fails if inputs are invalid", async function () {
 
     const resp = await request(app).get("/companies")
       .query({
@@ -186,7 +229,7 @@ describe("GET /companies", function () {
 
   });
 
-  test("Gets multiple companies correctly", async function () {
+  test("gets multiple companies correctly", async function () {
 
     const resp = await request(app).get("/companies")
       .query({
@@ -215,7 +258,7 @@ describe("GET /companies", function () {
 
   });
 
-  test("Throws error if min and max are invalid", async function () {
+  test("throws error if min and max are invalid", async function () {
 
     const resp = await request(app).get("/companies")
       .query({
@@ -232,7 +275,7 @@ describe("GET /companies", function () {
 
   });
 
-  test("Throws error if inputs are invalid", async function () {
+  test("throws error if inputs are invalid", async function () {
 
     const resp = await request(app).get("/companies")
       .query({
@@ -247,6 +290,20 @@ describe("GET /companies", function () {
       ],
       "status": 400
     });
+
+  });
+
+  test("fails if there are extra inputs", async function () {
+
+    const resp = await request(app).get("/companies")
+      .query({
+        name: "c",
+        minEmployees: 1,
+        maxEmployees: 3,
+        color: "blue"
+      });
+
+    expect(resp.statusCode).toEqual(400);
 
   });
 
@@ -297,7 +354,7 @@ describe("PATCH /companies/:handle", function () {
       .send({
         name: "C1-new",
       })
-      .set("authorization", `Bearer ${u2Token}`);
+      .set("authorization", `Bearer ${adminToken}`);
 
     expect(resp.body).toEqual({
       company: {
@@ -340,7 +397,7 @@ describe("PATCH /companies/:handle", function () {
         name: "new nope",
       })
 
-      .set("authorization", `Bearer ${u2Token}`);
+      .set("authorization", `Bearer ${adminToken}`);
     expect(resp.statusCode).toEqual(404);
   });
 
@@ -352,7 +409,7 @@ describe("PATCH /companies/:handle", function () {
         handle: "c1-new",
       })
 
-      .set("authorization", `Bearer ${u2Token}`);
+      .set("authorization", `Bearer ${adminToken}`);
     expect(resp.statusCode).toEqual(400);
   });
 
@@ -364,7 +421,7 @@ describe("PATCH /companies/:handle", function () {
         logoUrl: "not-a-url",
       })
 
-      .set("authorization", `Bearer ${u2Token}`);
+      .set("authorization", `Bearer ${adminToken}`);
     expect(resp.statusCode).toEqual(400);
   });
 });
@@ -377,7 +434,7 @@ describe("DELETE /companies/:handle", function () {
 
     const resp = await request(app)
       .delete(`/companies/c1`)
-      .set("authorization", `Bearer ${u2Token}`);
+      .set("authorization", `Bearer ${adminToken}`);
 
     expect(resp.body).toEqual({ deleted: "c1" });
   });
@@ -403,7 +460,7 @@ describe("DELETE /companies/:handle", function () {
 
     const resp = await request(app)
       .delete(`/companies/nope`)
-      .set("authorization", `Bearer ${u2Token}`);
+      .set("authorization", `Bearer ${adminToken}`);
 
     expect(resp.statusCode).toEqual(404);
   });

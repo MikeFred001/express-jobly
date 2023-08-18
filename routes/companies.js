@@ -22,7 +22,7 @@ const router = new express.Router();
  *
  * Returns { handle, name, description, numEmployees, logoUrl }
  *
- * Authorization required: logged in, isAdmin
+ * Authorization required: logged in, and an admin
  */
 
 router.post("/", ensureLoggedIn, isAdmin, async function (req, res, next) {
@@ -55,17 +55,16 @@ router.post("/", ensureLoggedIn, isAdmin, async function (req, res, next) {
 
 router.get("/", async function (req, res, next) {
   const queries = req.query;
-  console.log("queries >>>>>>:", queries)
+  // console.log("queries >>>>>>:", queries);
 
   if ("minEmployees" in queries) {
     queries.minEmployees = Number(queries.minEmployees);
   }
-
   if ("maxEmployees" in queries) {
     queries.maxEmployees = Number(queries.maxEmployees);
   }
 
-  console.log("REQ QUERY>>>>>", queries);
+  // console.log("REQ QUERY>>>>>", queries);
 
   const result = jsonschema.validate(
     queries,
@@ -103,7 +102,7 @@ router.get("/:handle", async function (req, res, next) {
  *
  * Returns { handle, name, description, numEmployees, logo_url }
  *
- * Authorization required: logged in and isAdmin
+ * Authorization required: logged in and an admin
  */
 
 router.patch("/:handle", ensureLoggedIn, isAdmin, async function (req, res, next) {
@@ -120,18 +119,16 @@ router.patch("/:handle", ensureLoggedIn, isAdmin, async function (req, res, next
   const company = await Company.update(req.params.handle, req.body);
   return res.json({ company });
 });
-// TODO: Write tests for this
 
 /** DELETE /[handle]  =>  { deleted: handle }
  *
- * Authorization: login
+ * Authorization: logged in and an admin
  */
 
 router.delete("/:handle", ensureLoggedIn, isAdmin, async function (req, res, next) {
   await Company.remove(req.params.handle);
   return res.json({ deleted: req.params.handle });
 });
-// TODO: Write tests for this
 
 
 module.exports = router;

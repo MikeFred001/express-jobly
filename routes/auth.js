@@ -64,3 +64,14 @@ router.post("/register", async function (req, res, next) {
 
 
 module.exports = router;
+
+/*
+"token": eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im1pa2VmcmVkI
+iwiaXNBZG1pbiI6ZmFsc2UsImlhdCI6MTY5MjMxMTg5Mn0.324WwnkJmFJ7_zbMdUNX1TGt5Nkk1Ka6
+5mrkUHaTEUI
+*/
+
+/*
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3RhZG1pbiIsImlzQWRta
+W4iOnRydWUsImlhdCI6MTY5MjMxNDY3N30.q5SjF15Gfk8O0VFXTeY7Cj-Uvzh5DFjJNg4--4gumqk
+*/
