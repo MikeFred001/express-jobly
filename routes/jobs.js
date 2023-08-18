@@ -60,7 +60,7 @@ router.get("/", async function (req, res, next) {
     queries.minSalary = Number(queries.minSalary);
   }
   if ("hasEquity" in queries) {
-    queries.hasEquity = Boolean(queries.hasEquity);
+    queries.hasEquity = queries.hasEquity === "true" ? true : false;
   }
 
   const result = jsonschema.validate(

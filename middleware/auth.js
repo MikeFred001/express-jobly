@@ -56,14 +56,12 @@ function isAdmin(req, res, next) {
  * Throws error if user is not an admin, otherwise moves to next function.
  */
 
-// TODO: More specific function name
 function isAdminOrCurrentUser(req, res, next) {
   const localUser = res.locals.user;
   const user = req.params;
 
-  // TODO: !== true instead
   if (localUser === undefined) throw new UnauthorizedError();
-  if (localUser.username !== user.username && localUser.isAdmin === false) {
+  if (localUser.username !== user.username && localUser.isAdmin !== true) {
     throw new UnauthorizedError();
   }
 
