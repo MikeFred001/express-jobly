@@ -26,18 +26,18 @@ class Company {
       throw new BadRequestError(`Duplicate company: ${handle}`);
 
     const result = await db.query(`
-                INSERT INTO companies (handle,
-                                       name,
-                                       description,
-                                       num_employees,
-                                       logo_url)
-                VALUES ($1, $2, $3, $4, $5)
-                RETURNING
-                    handle,
-                    name,
-                    description,
-                    num_employees AS "numEmployees",
-                    logo_url AS "logoUrl"`, [
+      INSERT INTO companies (handle,
+                              name,
+                              description,
+                              num_employees,
+                              logo_url)
+      VALUES ($1, $2, $3, $4, $5)
+      RETURNING
+          handle,
+          name,
+          description,
+          num_employees AS "numEmployees",
+          logo_url AS "logoUrl"`, [
       handle,
       name,
       description,

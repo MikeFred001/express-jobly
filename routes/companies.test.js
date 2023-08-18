@@ -11,7 +11,6 @@ const {
   commonAfterEach,
   commonAfterAll,
   u1Token,
-  u2Token,
   adminToken
 } = require("./_testCommon");
 
@@ -31,7 +30,7 @@ describe("POST /companies", function () {
     numEmployees: 10,
   };
 
-  test("not ok if not admin", async function () {
+  test("fails if not admin", async function () {
 
     const resp = await request(app)
       .post("/companies")
@@ -41,7 +40,7 @@ describe("POST /companies", function () {
     expect(resp.statusCode).toEqual(401);
   });
 
-  test("ok for admins", async function () {
+  test("works for admins", async function () {
 
     const resp = await request(app)
       .post("/companies")
@@ -152,7 +151,7 @@ describe("GET /companies", function () {
 
   });
 
-  test("Gets correct companies with all params", async function () {
+  test("gets correct companies with all params", async function () {
 
     const resp = await request(app).get("/companies")
       .query({
@@ -174,7 +173,7 @@ describe("GET /companies", function () {
 
   });
 
-  test("Gets correct companies with only name param", async function () {
+  test("gets correct companies with only name param", async function () {
 
     const resp = await request(app).get("/companies")
       .query({
@@ -193,7 +192,7 @@ describe("GET /companies", function () {
     ]);
   });
 
-  test("Gets correct companies with minEmployees", async function () {
+  test("gets correct companies with minEmployees", async function () {
 
     const resp = await request(app).get("/companies")
       .query({
@@ -366,8 +365,8 @@ describe("PATCH /companies/:handle", function () {
       },
     });
   });
-
-    test("fails if not admin", async function () {
+  // TODO: unauth
+    test("unauth if not admin", async function () {
 
       const resp = await request(app)
         .patch(`/companies/c1`)
@@ -428,6 +427,8 @@ describe("PATCH /companies/:handle", function () {
 
 /************************************** DELETE /companies/:handle */
 
+// TODO: Test that unauth request with bad data is throwing the correct error
+// Application-wide
 describe("DELETE /companies/:handle", function () {
 
   test("works for admins", async function () {

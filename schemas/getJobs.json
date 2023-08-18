@@ -4,14 +4,15 @@
     "type": "object",
 
     "properties": {
-      "name": {
+      "title": {
         "type": "string",
         "minLength": 1,
-        "maxLength": 50
+        "maxLength": 30
       },
-      "minEmployees": {"type": "integer"},
-      "maxEmployees": {"type": "integer"}
+      "minSalary": {"type": "integer"},
+      "hasEquity": {"type": "boolean"}
     },
+
     "additionalProperties": false,
     "required": []
   }

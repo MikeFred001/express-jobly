@@ -6,7 +6,7 @@ const {
   authenticateJWT,
   ensureLoggedIn,
   isAdmin,
-  isAuthorized
+  isAdminOrCurrentUser
 } = require("./auth");
 
 
@@ -83,7 +83,7 @@ describe("isAdmin function", function () {
     isAdmin(req, res, next);
   });
 
-  test("throws error if not admin", function () {
+  test("fails if not admin", function () {
     const req = {};
     const res = { locals: { user: { username: "test", isAdmin: false } } };
 
@@ -101,35 +101,39 @@ describe("isAdmin function", function () {
 });
 
 
-describe("isAuthorized function", function () {
+/**************************** isAdminOrCurrentUser ****************************/
+
+describe("isAdminOrCurrentUser function", function () {
 
   test("works for admins", function () {
     const req = { params: { username: "testuser" } };
     const res = { locals: { user: { username: "admin", isAdmin: true } } };
 
-    isAuthorized(req, res, next);
+    isAdminOrCurrentUser(req, res, next);
   });
 
   test("works for authorized users", function () {
     const req = { params: { username: "test" } };
     const res = { locals: { user: { username: "test", isAdmin: false } } };
 
-    isAuthorized(req, res, next);
+    isAdminOrCurrentUser(req, res, next);
   });
 
-  test("fails if not authorized users", function () {
+  // TODO: test if isAdmin property is an incorrect value
+
+  test("fails if not authorized user", function () {
     const req = { params: { username: "test" } };
     const res = { locals: { user: { username: "wrong", isAdmin: false } } };
 
-    expect(() => isAuthorized(req, res, next))
+    expect(() => isAdminOrCurrentUser(req, res, next))
         .toThrow(UnauthorizedError);
   });
 
   test("unauth for anon user", function () {
-    const req = { params: { username: "testuser"} };
+    const req = { params: { username: "testuser" } };
     const res = { locals: {} };
 
-    expect(() => isAuthorized(req, res, next))
+    expect(() => isAdminOrCurrentUser(req, res, next))
         .toThrow(UnauthorizedError);
   });
 });

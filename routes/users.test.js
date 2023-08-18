@@ -128,7 +128,7 @@ describe("POST /users", function () {
 
     expect(resp.statusCode).toEqual(400);
   });
-
+  // TODO: specify what is causing failure
   test("fails if required field is not sent", async function () {
 
     const resp = await request(app)
@@ -415,7 +415,7 @@ describe("PATCH /users/:username", () => {
         .set("authorization", `Bearer ${u1Token}`);
     expect(resp.statusCode).toEqual(400);
   });
-
+  // TODO: test that user cannot update isAdmin status
   test("works: set new password", async function () {
 
     const resp = await request(app)

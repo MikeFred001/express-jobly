@@ -16,6 +16,8 @@ CREATE TABLE users (
   is_admin BOOLEAN NOT NULL DEFAULT FALSE
 );
 
+
+-- JOBS --------------------------
 CREATE TABLE jobs (
   id SERIAL PRIMARY KEY,
   title TEXT NOT NULL,
@@ -24,6 +26,8 @@ CREATE TABLE jobs (
   company_handle VARCHAR(25) NOT NULL
     REFERENCES companies ON DELETE CASCADE
 );
+
+
 
 CREATE TABLE applications (
   username VARCHAR(25)

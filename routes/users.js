@@ -5,7 +5,7 @@
 const jsonschema = require("jsonschema");
 
 const express = require("express");
-const { ensureLoggedIn, isAdmin, isAuthorized } = require("../middleware/auth");
+const { ensureLoggedIn, isAdmin, isAdminOrCurrentUser } = require("../middleware/auth");
 const { BadRequestError, UnauthorizedError } = require("../expressError");
 const User = require("../models/user");
 const { createToken } = require("../helpers/tokens");
@@ -62,11 +62,12 @@ router.get("/", ensureLoggedIn, isAdmin, async function (req, res, next) {
  * Returns { username, firstName, lastName, isAdmin }
  *
  * Authorization required: logged in, and admin or authorized user
+ * // TODO: more specific docstring and function name
  **/
 
 router.get("/:username",
   ensureLoggedIn,
-  isAuthorized,
+  isAdminOrCurrentUser,
   async function (req, res, next) {
 
     console.log("REQ PARAMS>>>>>>>>", req.params.username);
@@ -92,7 +93,7 @@ router.get("/:username",
 
 router.patch("/:username",
   ensureLoggedIn,
-  isAuthorized,
+  isAdminOrCurrentUser,
     async function (req, res, next) {
       console.log("REQ BODY>>>>>>", req.body);
       const validator = jsonschema.validate(
@@ -117,7 +118,7 @@ router.patch("/:username",
 
 router.delete("/:username",
   ensureLoggedIn,
-  isAuthorized,
+  isAdminOrCurrentUser,
   async function (req, res, next) {
     await User.remove(req.params.username);
     return res.json({ deleted: req.params.username });

@@ -55,10 +55,13 @@ function isAdmin(req, res, next) {
  * authorized user.
  * Throws error if user is not an admin, otherwise moves to next function.
  */
-function isAuthorized(req, res, next) {
+
+// TODO: More specific function name
+function isAdminOrCurrentUser(req, res, next) {
   const localUser = res.locals.user;
   const user = req.params;
 
+  // TODO: !== true instead
   if (localUser === undefined) throw new UnauthorizedError();
   if (localUser.username !== user.username && localUser.isAdmin === false) {
     throw new UnauthorizedError();
@@ -72,7 +75,7 @@ module.exports = {
   authenticateJWT,
   ensureLoggedIn,
   isAdmin,
-  isAuthorized
+  isAdminOrCurrentUser
 };
 
 
