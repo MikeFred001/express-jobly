@@ -32,7 +32,6 @@
     "pg": "*"
   },
   "devDependencies": {
-    "supertest": "^6.1.3",
-    "vite": "^4.2.1"
+    "supertest": "^6.1.3"
   }
 }
